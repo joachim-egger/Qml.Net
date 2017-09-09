@@ -1,6 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.0
+import test 1.0
 
 ApplicationWindow {
     visible: true
@@ -8,30 +9,36 @@ ApplicationWindow {
     height: 480
     title: qsTr("Hello World")
 
-    SwipeView {
-        id: swipeView
-        anchors.fill: parent
-        currentIndex: tabBar.currentIndex
+    TestType {
+        id: test
+    }
 
-        Page1 {
+    ListModel {
+        id: fruitModel
+
+        ListElement {
+            name: "Apple"
+            cost: 2.45
         }
-
-        Page {
-            Label {
-                text: qsTr("Second page")
-                anchors.centerIn: parent
-            }
+        ListElement {
+            name: "Orange"
+            cost: 3.25
+        }
+        ListElement {
+            name: "Banana"
+            cost: 1.95
         }
     }
 
-    footer: TabBar {
-        id: tabBar
-        currentIndex: swipeView.currentIndex
-        TabButton {
-            text: qsTr("First")
-        }
-        TabButton {
-            text: qsTr("Second")
+    Item {
+        Component.onCompleted: function() {
+            console.log(test.getList())
+            console.log(Array.isArray(test.getList()))
+            var rr = test.testMethod();
+            console.log(Array.isArray(rr))
+            rr.push("TEST")
+            console.log(rr)
+            console.log(test.testMethod())
         }
     }
 }
