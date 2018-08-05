@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using AdvancedDLSupport;
+using Qml.Net.Internal.PInvoke;
 
 namespace Qml.Net.Internal.Types
 {
@@ -39,7 +39,7 @@ namespace Qml.Net.Internal.Types
         }
     }
 
-    internal interface INetDelegateInterop
+    internal interface INetDelegateInterop : IPinvoke
     {
         [NativeSymbol(Entrypoint = "delegate_create")]
         IntPtr Create(IntPtr handle);

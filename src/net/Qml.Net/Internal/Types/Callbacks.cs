@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using AdvancedDLSupport;
+using Qml.Net.Internal.PInvoke;
 
 namespace Qml.Net.Internal.Types
 {
@@ -22,13 +22,13 @@ namespace Qml.Net.Internal.Types
         public IntPtr AwaitTask;
     }
 
-    internal interface ICallbacksIterop
+    internal interface ICallbacksIterop : IPinvoke
     {
         [NativeSymbol(Entrypoint = "type_info_callbacks_registerCallbacks")]
         void RegisterCallbacks(ref Callbacks callbacks);
 
         [NativeSymbol(Entrypoint = "type_info_callbacks_isTypeValid")]
-        bool IsTypeValid([MarshalAs(UnmanagedType.LPWStr), CallerFree]string typeName);
+        bool IsTypeValid([MarshalAs(UnmanagedType.LPWStr)]string typeName);
 
         [NativeSymbol(Entrypoint = "type_info_callbacks_releaseNetReferenceGCHandle")]
         void ReleaseNetReference(UInt64 objectId);

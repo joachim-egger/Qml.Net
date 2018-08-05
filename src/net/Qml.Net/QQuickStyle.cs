@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
-using AdvancedDLSupport;
 using Qml.Net.Internal;
+using Qml.Net.Internal.PInvoke;
 
 namespace Qml.Net
 {
@@ -12,9 +12,9 @@ namespace Qml.Net
         }
     }
     
-    internal interface IQQuickStyleInterop
+    internal interface IQQuickStyleInterop : IPinvoke
     {
         [NativeSymbol(Entrypoint = "qquickstyle_setStyle")]
-        void SetStyle([MarshalAs(UnmanagedType.LPWStr), CallerFree]string style);
+        void SetStyle([MarshalAs(UnmanagedType.LPWStr)]string style);
     }
 }

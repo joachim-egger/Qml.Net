@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
-using AdvancedDLSupport;
 using Qml.Net.Internal;
+using Qml.Net.Internal.PInvoke;
 using Qml.Net.Internal.Qml;
 
 namespace Qml.Net
@@ -124,7 +124,7 @@ namespace Qml.Net
         }
     }
     
-    internal interface IQGuiApplicationInterop
+    internal interface IQGuiApplicationInterop : IPinvoke
     {
         [NativeSymbol(Entrypoint = "qguiapplication_create")]
         IntPtr Create(IntPtr args);

@@ -1,5 +1,5 @@
 ﻿using System.Runtime.InteropServices;
-using AdvancedDLSupport;
+using Qml.Net.Internal.PInvoke;
 
 namespace Qml.Net
 {
@@ -11,9 +11,9 @@ namespace Qml.Net
         }
     }
     
-    internal interface IQResourceInterop
+    internal interface IQResourceInterop : IPinvoke
     {
         [NativeSymbol(Entrypoint = "qresource_registerResource")]
-        bool RegisterResource([MarshalAs(UnmanagedType.LPWStr), CallerFree]string rccFileName, [MarshalAs(UnmanagedType.LPWStr), CallerFree]string resourceRoot);
+        bool RegisterResource([MarshalAs(UnmanagedType.LPWStr)]string rccFileName, [MarshalAs(UnmanagedType.LPWStr)]string resourceRoot);
     }
 }

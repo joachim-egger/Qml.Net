@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using AdvancedDLSupport;
 using Qml.Net.Internal;
 using Qml.Net.Internal.Behaviors;
+using Qml.Net.Internal.PInvoke;
 using Qml.Net.Internal.Types;
 
 namespace Qml.Net
@@ -60,7 +60,7 @@ namespace Qml.Net
         }
     }
     
-    internal interface IQQmlApplicationEngine
+    internal interface IQQmlApplicationEngine : IPinvoke
     {
         [NativeSymbol(Entrypoint = "qqmlapplicationengine_create")]
         IntPtr Create();
@@ -68,15 +68,15 @@ namespace Qml.Net
         void Destroy(IntPtr engine);
 
         [NativeSymbol(Entrypoint = "qqmlapplicationengine_load")]
-        int Load(IntPtr engine, [MarshalAs(UnmanagedType.LPWStr), CallerFree]string path);
+        int Load(IntPtr engine, [MarshalAs(UnmanagedType.LPWStr)]string path);
 
         [NativeSymbol(Entrypoint = "qqmlapplicationengine_loadData")]
-        int LoadData(IntPtr engine, [MarshalAs(UnmanagedType.LPWStr), CallerFree]string path);
+        int LoadData(IntPtr engine, [MarshalAs(UnmanagedType.LPWStr)]string path);
 
         [NativeSymbol(Entrypoint = "qqmlapplicationengine_registerType")]
-        int RegisterType(IntPtr type, [MarshalAs(UnmanagedType.LPWStr), CallerFree]string uri, int versionMajor, int versionMinor, [MarshalAs(UnmanagedType.LPWStr), CallerFree]string qmlName);
+        int RegisterType(IntPtr type, [MarshalAs(UnmanagedType.LPWStr)]string uri, int versionMajor, int versionMinor, [MarshalAs(UnmanagedType.LPWStr)]string qmlName);
 
         [NativeSymbol(Entrypoint = "qqmlapplicationengine_addImportPath")]
-        void AddImportPath(IntPtr engine, [MarshalAs(UnmanagedType.LPWStr), CallerFree]string path);
+        void AddImportPath(IntPtr engine, [MarshalAs(UnmanagedType.LPWStr)]string path);
     }
 }

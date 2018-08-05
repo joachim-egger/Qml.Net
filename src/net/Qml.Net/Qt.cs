@@ -1,9 +1,7 @@
-﻿using AdvancedDLSupport;
-using Qml.Net.Internal;
+﻿using Qml.Net.Internal;
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
+using Qml.Net.Internal.PInvoke;
 
 namespace Qml.Net
 {
@@ -20,10 +18,10 @@ namespace Qml.Net
         } 
     }
 
-    internal interface IQtInterop
+    internal interface IQtInterop : IPinvoke
     {
         [NativeSymbol(Entrypoint = "qt_putenv")]
-        bool PutEnv([MarshalAs(UnmanagedType.LPStr), CallerFree]string name, [MarshalAs(UnmanagedType.LPStr), CallerFree]string value);
+        bool PutEnv([MarshalAs(UnmanagedType.LPStr)]string name, [MarshalAs(UnmanagedType.LPStr)]string value);
         [NativeSymbol(Entrypoint = "qt_getenv")]
         IntPtr GetEnv(string name);
     }

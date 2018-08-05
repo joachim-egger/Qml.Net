@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using AdvancedDLSupport;
-using Qml.Net.Internal;
+using Qml.Net.Internal.PInvoke;
 
 namespace Qml.Net.Internal.Types
 {
@@ -100,7 +99,7 @@ namespace Qml.Net.Internal.Types
         }
     }
     
-    internal interface INetMethodInfoInterop
+    internal interface INetMethodInfoInterop : IPinvoke
     {
         [NativeSymbol(Entrypoint = "method_info_parameter_destroy")]
         void DestroyParameter(IntPtr parameter);
@@ -110,7 +109,7 @@ namespace Qml.Net.Internal.Types
         IntPtr GetParameterType(IntPtr methodParameter);
         
         [NativeSymbol(Entrypoint = "method_info_create")]
-        IntPtr Create(IntPtr parentTypeInfo, [MarshalAs(UnmanagedType.LPWStr), CallerFree]string methodName, IntPtr returnTypeInfo);
+        IntPtr Create(IntPtr parentTypeInfo, [MarshalAs(UnmanagedType.LPWStr),]string methodName, IntPtr returnTypeInfo);
         [NativeSymbol(Entrypoint = "method_info_destroy")]
         void Destroy(IntPtr methodInfo);
 
@@ -120,7 +119,7 @@ namespace Qml.Net.Internal.Types
         IntPtr GetReturnType(IntPtr method);
         
         [NativeSymbol(Entrypoint = "method_info_addParameter")]
-        void AddParameter(IntPtr method, [MarshalAs(UnmanagedType.LPWStr), CallerFree]string name, IntPtr type);
+        void AddParameter(IntPtr method, [MarshalAs(UnmanagedType.LPWStr)]string name, IntPtr type);
         [NativeSymbol(Entrypoint = "method_info_getParameterCount")]
         int GetParameterCount(IntPtr method);
         [NativeSymbol(Entrypoint = "method_info_getParameter")]

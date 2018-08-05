@@ -1,12 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using AdvancedDLSupport;
 using Qml.Net.Internal.Qml;
 using Qml.Net.Internal.Types;
-
-[assembly: InternalsVisibleTo("DLSupportDynamicAssembly")]
 
 namespace Qml.Net.Internal
 {
@@ -16,76 +13,49 @@ namespace Qml.Net.Internal
         
         static Interop()
         {
+            Callbacks = PInvoke.CallbacksIterop.Get();
+            NetTypeInfo = PInvoke.NetTypeInfoInterop.Get();
+            NetMethodInfo = PInvoke.NetMethodInfoInterop.Get();
+            NetPropertyInfo = PInvoke.NetPropertyInfoInterop.Get();
+            NetTypeManager = PInvoke.NetTypeManagerInterop.Get();
+            QGuiApplication = PInvoke.QGuiApplicationInterop.Get();
+            QQmlApplicationEngine = PInvoke.QQmlApplicationEngine.Get();
+            NetVariant = PInvoke.NetVariantInterop.Get();
+            NetReference = PInvoke.NetReferenceInterop.Get();
+            NetVariantList = PInvoke.NetVariantListInterop.Get();
+            NetTestHelper = PInvoke.NetTestHelperInterop.Get();
+            NetSignalInfo = PInvoke.NetSignalInfoInterop.Get();
+            QResource = PInvoke.QResourceInterop.Get();
+            NetDelegate = PInvoke.NetDelegateInterop.Get();
+            NetJsValue = PInvoke.NetJsValueInterop.Get();
+            QQuickStyle = PInvoke.QQuickStyleInterop.Get();
+            QtInterop = PInvoke.QtInterop.Get();
+            Utilities = PInvoke.Utilities.Get();
+            
             string pluginsDirectory = null;
             string qmlDirectory = null;
 
-            ILibraryPathResolver pathResolver = null;
-            var internalType = Type.GetType("AdvancedDLSupport.DynamicLinkLibraryPathResolver, AdvancedDLSupport");
-            if (internalType != null)
+            string libPath = null;
+            
+            // If we couldn't manually load the library, let's try to let the .NET
+            // runtime find it.
+            if (string.IsNullOrEmpty(libPath))
             {
-                pathResolver = (ILibraryPathResolver)Activator.CreateInstance(internalType, new object[] { true });
-
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                try
                 {
-                    // This custom path resolver attempts to do a DllImport to get the path that .NET decides.
-                    // It may load a special dll from a NuGet package.
-                    pathResolver = new WindowsDllImportLibraryPathResolver(pathResolver);
-                }
-                else if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    pathResolver = new MacDllImportLibraryPathResolver(pathResolver);
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                {
-                    pathResolver = new LinuxDllImportLibraryPathResolver(pathResolver);
-                }
-
-                var resolveResult = pathResolver.Resolve("QmlNet");
-                
-                if(resolveResult.IsSuccess)
-                {
-                    var directory = Path.GetDirectoryName(resolveResult.Path);
-                    if (!string.IsNullOrEmpty(directory))
+                    Utilities.GetVersion();
+                    using (var process = Process.GetCurrentProcess())
                     {
-                        // If this library has a plugins/qml directory below it, set it.
-                        var potentialPlugisDirectory = Path.Combine(directory, "plugins");
-                        if (Directory.Exists(potentialPlugisDirectory))
+                        foreach (ProcessModule module in process.Modules)
                         {
-                            pluginsDirectory = potentialPlugisDirectory;
-                        }
-
-                        var potentialQmlDirectory = Path.Combine(directory, "qml");
-                        if (Directory.Exists(potentialQmlDirectory))
-                        {
-                            qmlDirectory = potentialQmlDirectory;
+                            Console.WriteLine(module.FileName);
                         }
                     }
                 }
+                // ReSharper disable EmptyGeneralCatchClause
+                catch (Exception) {}
+                // ReSharper restore EmptyGeneralCatchClause
             }
-            
-            
-            var builder = new NativeLibraryBuilder(pathResolver: pathResolver);
-            
-            var interop = builder.ActivateInterface<ICombined>("QmlNet");
-
-            Callbacks = interop;
-            NetTypeInfo = interop;
-            NetMethodInfo = interop;
-            NetPropertyInfo = interop;
-            NetTypeManager = interop;
-            QGuiApplication = interop;
-            QQmlApplicationEngine = interop;
-            NetVariant = interop;
-            NetReference = interop;
-            NetVariantList = interop;
-            NetTestHelper = interop;
-            NetSignalInfo = interop;
-            QResource = interop;
-            NetDelegate = interop;
-            NetJsValue = interop;
-            QQuickStyle = interop;
-            QtInterop = interop;
-            Utilities = interop;
             
             if(!string.IsNullOrEmpty(pluginsDirectory))
             {
@@ -100,33 +70,6 @@ namespace Qml.Net.Internal
             Callbacks.RegisterCallbacks(ref cb);
         }
 
-        // ReSharper disable PossibleInterfaceMemberAmbiguity
-        // ReSharper disable MemberCanBePrivate.Global
-        internal interface ICombined :
-        // ReSharper restore MemberCanBePrivate.Global
-        // ReSharper restore PossibleInterfaceMemberAmbiguity
-            ICallbacksIterop,
-            INetTypeInfoInterop,
-            INetMethodInfoInterop,
-            INetPropertyInfoInterop,
-            INetTypeManagerInterop,
-            IQGuiApplicationInterop,
-            IQQmlApplicationEngine,
-            INetVariantInterop,
-            INetReferenceInterop,
-            INetVariantListInterop,
-            INetTestHelperInterop,
-            INetSignalInfoInterop,
-            IQResourceInterop,
-            INetDelegateInterop,
-            INetJsValueInterop,
-            IQQuickStyleInterop,
-            IQtInterop,
-            IUtilities
-        {
-
-        }
-        
         public static ICallbacksIterop Callbacks { get; }
 
         public static INetTypeInfoInterop NetTypeInfo { get; }

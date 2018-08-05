@@ -27,6 +27,11 @@ namespace Build
                 CleanDirectory(ExpandPath("./output"));
             });
             
+            Add("gen-interop", () =>
+            {
+                Interop.Generate(ExpandPath("./src/net/Qml.Net/Internal/PInvoke/Generated.cs"));
+            });
+            
             Add("test", () =>
             {
                 if (IsOSX())

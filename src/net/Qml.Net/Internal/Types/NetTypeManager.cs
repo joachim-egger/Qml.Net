@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using AdvancedDLSupport;
+using Qml.Net.Internal.PInvoke;
 
 namespace Qml.Net.Internal.Types
 {
@@ -23,9 +23,9 @@ namespace Qml.Net.Internal.Types
         }
     }
     
-    internal interface INetTypeManagerInterop
+    internal interface INetTypeManagerInterop : IPinvoke
     {
         [NativeSymbol(Entrypoint = "type_manager_getTypeInfo")]
-        IntPtr GetTypeInfo([MarshalAs(UnmanagedType.LPWStr), CallerFree]string fullTypeName);
+        IntPtr GetTypeInfo([MarshalAs(UnmanagedType.LPWStr)]string fullTypeName);
     }
 }

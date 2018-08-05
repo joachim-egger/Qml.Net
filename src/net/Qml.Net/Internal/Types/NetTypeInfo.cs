@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using AdvancedDLSupport;
-using Qml.Net.Internal;
+using Qml.Net.Internal.PInvoke;
 
 namespace Qml.Net.Internal.Types
 {
@@ -89,10 +88,10 @@ namespace Qml.Net.Internal.Types
         }
     }
 
-    internal interface INetTypeInfoInterop
+    internal interface INetTypeInfoInterop : IPinvoke
     {
         [NativeSymbol(Entrypoint = "type_info_create")]
-        IntPtr Create([MarshalAs(UnmanagedType.LPWStr), CallerFree]string fullTypeName);
+        IntPtr Create([MarshalAs(UnmanagedType.LPWStr)]string fullTypeName);
         [NativeSymbol(Entrypoint = "type_info_destroy")]
         void Destroy(IntPtr netTypeInfo);
         
@@ -100,7 +99,7 @@ namespace Qml.Net.Internal.Types
         IntPtr GetFullTypeName(IntPtr netTypeInfo);
         
         [NativeSymbol(Entrypoint = "type_info_setClassName")]
-        void SetClassName(IntPtr netTypeInfo, [MarshalAs(UnmanagedType.LPWStr), CallerFree]string className);
+        void SetClassName(IntPtr netTypeInfo, [MarshalAs(UnmanagedType.LPWStr)]string className);
         [NativeSymbol(Entrypoint = "type_info_getClassName")]
         IntPtr GetClassName(IntPtr netTypeInfo);
         

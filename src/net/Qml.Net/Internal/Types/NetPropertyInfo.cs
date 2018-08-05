@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using AdvancedDLSupport;
-using Qml.Net.Internal;
+using Qml.Net.Internal.PInvoke;
 
 namespace Qml.Net.Internal.Types
 {
@@ -73,11 +72,11 @@ namespace Qml.Net.Internal.Types
         }
     }
 
-    internal interface INetPropertyInfoInterop
+    internal interface INetPropertyInfoInterop : IPinvoke
     {
         [NativeSymbol(Entrypoint = "property_info_create")]
         IntPtr Create(IntPtr parentType,
-            [MarshalAs(UnmanagedType.LPWStr), CallerFree]string methodName,
+            [MarshalAs(UnmanagedType.LPWStr)]string methodName,
             IntPtr returnType,
             bool canRead,
             bool canWrite,

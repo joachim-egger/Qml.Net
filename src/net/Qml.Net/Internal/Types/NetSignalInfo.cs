@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using AdvancedDLSupport;
-using Qml.Net.Internal;
+using Qml.Net.Internal.PInvoke;
 
 namespace Qml.Net.Internal.Types
 {
@@ -41,10 +40,10 @@ namespace Qml.Net.Internal.Types
         }
     }
 
-    internal interface INetSignalInfoInterop
+    internal interface INetSignalInfoInterop : IPinvoke
     {
         [NativeSymbol(Entrypoint = "signal_info_create")]
-        IntPtr Create(IntPtr parentType, [MarshalAs(UnmanagedType.LPWStr), CallerFree] string name);
+        IntPtr Create(IntPtr parentType, [MarshalAs(UnmanagedType.LPWStr)] string name);
         [NativeSymbol(Entrypoint = "signal_info_destroy")]
         void Destroy(IntPtr signal);
 

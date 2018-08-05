@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using AdvancedDLSupport;
 using Qml.Net.Internal;
+using Qml.Net.Internal.PInvoke;
 
 namespace Qml.Net
 {
@@ -25,12 +25,15 @@ namespace Qml.Net
         {
             private readonly IntPtr _ignore;
             public readonly IntPtr Data;
-        } 
+        }
     }
     
-    internal interface IUtilities
+    internal interface IUtilities : IPinvoke
     {
         [NativeSymbol(Entrypoint = "freeString")]
         void FreeString(IntPtr container);
+        
+        [NativeSymbol(Entrypoint = "qml_net_getVersion")]
+        long GetVersion(); 
     }
 }

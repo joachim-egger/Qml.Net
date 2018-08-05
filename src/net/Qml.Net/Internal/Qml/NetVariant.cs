@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using AdvancedDLSupport;
+using Qml.Net.Internal.PInvoke;
 using Qml.Net.Internal.Types;
 
 namespace Qml.Net.Internal.Qml
@@ -129,7 +129,7 @@ namespace Qml.Net.Internal.Qml
         }
     }
     
-    internal interface INetVariantInterop
+    internal interface INetVariantInterop : IPinvoke
     {
         [NativeSymbol(Entrypoint = "net_variant_create")]
         IntPtr Create();
@@ -170,7 +170,7 @@ namespace Qml.Net.Internal.Qml
         double GetDouble(IntPtr variant);
         
         [NativeSymbol(Entrypoint = "net_variant_setString")]
-        void SetString(IntPtr variant, [MarshalAs(UnmanagedType.LPWStr), CallerFree]string value);
+        void SetString(IntPtr variant, [MarshalAs(UnmanagedType.LPWStr)]string value);
         [NativeSymbol(Entrypoint = "net_variant_getString")]
         IntPtr GetString(IntPtr variant);
         

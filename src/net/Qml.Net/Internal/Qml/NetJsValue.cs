@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Dynamic;
 using System.Runtime.InteropServices;
-using AdvancedDLSupport;
+using Qml.Net.Internal.PInvoke;
 
 namespace Qml.Net.Internal.Qml
 {
@@ -159,7 +159,7 @@ namespace Qml.Net.Internal.Qml
         object Call(params object[] parameters);
     }
     
-    internal interface INetJsValueInterop
+    internal interface INetJsValueInterop : IPinvoke
     {
         [NativeSymbol(Entrypoint = "net_js_value_destroy")]
         void Destroy(IntPtr jsValue);
@@ -169,8 +169,8 @@ namespace Qml.Net.Internal.Qml
         [NativeSymbol(Entrypoint = "net_js_value_call")]
         IntPtr Call(IntPtr jsValue, IntPtr parameters);
         [NativeSymbol(Entrypoint = "net_js_value_getProperty")]
-        IntPtr GetProperty(IntPtr jsValue, [MarshalAs(UnmanagedType.LPWStr), CallerFree] string propertyName);
+        IntPtr GetProperty(IntPtr jsValue, [MarshalAs(UnmanagedType.LPWStr)] string propertyName);
         [NativeSymbol(Entrypoint = "net_js_value_setProperty")]
-        void SetProperty(IntPtr jsValue, [MarshalAs(UnmanagedType.LPWStr), CallerFree] string propertyName, IntPtr value);
+        void SetProperty(IntPtr jsValue, [MarshalAs(UnmanagedType.LPWStr)] string propertyName, IntPtr value);
     }
 }

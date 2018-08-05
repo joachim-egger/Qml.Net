@@ -1,5 +1,5 @@
 ﻿using System;
-using AdvancedDLSupport;
+using Qml.Net.Internal.PInvoke;
 
 namespace Qml.Net.Internal.Qml
 {
@@ -47,7 +47,7 @@ namespace Qml.Net.Internal.Qml
         }
     }
     
-    internal interface INetVariantListInterop
+    internal interface INetVariantListInterop : IPinvoke
     {   
         [NativeSymbol(Entrypoint = "net_variant_list_create")]
         IntPtr Create();
