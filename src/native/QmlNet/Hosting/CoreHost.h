@@ -20,6 +20,8 @@ public:
     static bool isClrLoaded();
     static QString findClrPath();
     static QString findHostFxrPath();
+    static void test();
+    static void test2();
 private:
     // Function pointers to the exported C functions.
     static coreclr_initialize_ptr init;

@@ -58,6 +58,17 @@ CORECLR_HOSTING_API(hostfxr_get_native_search_directories,
             int buffer_size,
             int* required_buffer_size);
 
+CORECLR_HOSTING_API(hostfxr_main_startupinfo,
+            const int argc,
+            const char* argv[],
+            const char* host_path,
+            const char* dotnet_root,
+            const char* app_path);
+
+CORECLR_HOSTING_API(hostfxr_main,
+            const int argc,
+            const char* argv[]);
+
 #undef CORECLR_HOSTING_API
                       
 #endif // CORECLR_HOST_H
