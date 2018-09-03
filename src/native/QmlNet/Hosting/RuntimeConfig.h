@@ -5,7 +5,7 @@
 #include <QVersionNumber>
 #include <QJsonObject>
 
-class RuntimeConfig
+class RuntimeConfig :
 {
 public:
     RuntimeConfig(QJsonObject jsonObject);

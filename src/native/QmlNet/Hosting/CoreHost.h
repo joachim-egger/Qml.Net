@@ -18,6 +18,7 @@ public:
     CoreHost(QSharedPointer<RuntimeConfig> runtimeConfig);
     LoadClrResult loadClr();
     bool isClrLoaded();
+
     static QString findClrPath();
     static QString findDotNetRoot();
     static QSharedPointer<CoreHost> buildHost(QString managedEntryAssembly);
