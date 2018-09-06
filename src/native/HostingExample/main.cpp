@@ -14,8 +14,8 @@ int main(int argc, char *argv[])
 //                nullptr
 //            );
 
-    CoreHost::loadClr(CoreHost::findClrPath());
-    QSharedPointer<CoreHost> host = CoreHost::buildHost("/Users/pknopf/temp/test-net/bin/Debug/netcoreapp2.1/test-net.dll");
+    //QSharedPointer<CoreHost> host = CoreHost::buildHost("/Users/pknopf/temp/test-net/bin/Debug/netcoreapp2.1/test-net.dll");
+    CoreHost::test();
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);

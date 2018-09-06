@@ -1,3 +1,6 @@
 [submodule "build/scripts/Buildary"]
 	path = build/scripts/Buildary
 	url = https://github.com/pauldotknopf/dotnet-buildary.git
+[submodule "submodules/core-setup"]
+	path = submodules/core-setup
+	url = https://github.com/dotnet/core-setup.git

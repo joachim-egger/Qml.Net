@@ -3,148 +3,72 @@
 #include <QFileInfo>
 #include <QDir>
 #include <dlfcn.h>
+#include <QThread>
+#include <QDebug>
+#include <iostream>
+#include "deps_resolver.h"
+#include "args.h"
 
-CoreHost::CoreHost(QSharedPointer<RuntimeConfig> runtimeConfig) :
-    runtimeConfig(runtimeConfig),
-    init(nullptr),
-    shutdown(nullptr),
-    shutdown2(nullptr),
-    createDelegate(nullptr),
-    executeAssembly(nullptr)
+
+CoreHost::CoreHost()
 {
 
 }
 
-bool CoreHost::isClrLoaded()
+void CoreHost::test()
 {
-    return loadResult == LoadClrResult::Loaded;
-}
+    std::vector<const char*> argv;
+    argv.push_back("/usr/local/share/dotnet/dotnet");
+    argv.push_back("exec");
+    argv.push_back("/Users/pknopf/temp/TestWeb/bin/Debug/netcoreapp2.1/TestWeb.dll");
+    int argc = argv.size();
 
-CoreHost::LoadClrResult CoreHost::loadClr()
-{
-    if(loadResult == CoreHost::LoadClrResult::Loaded) {
-        return LoadClrResult::AlreadyLoaded;
-    }
+    hostpolicy_init_t g_init;
+    g_init.host_info.parse(argc, &argv[0]);
+    //parse_arguments()
+//    qputenv("DOTNET_ROOT", "/usr/local/share/dotnet");
 
-    QList<QString> dotnetRoots;
-    dotnetRoots.append("/usr/local/share/dotnet");
-    dotnetRoots.append("/usr/share/dotnet");
-    dotnetRoots.append("/opt/dotnet");
-    // TODO: find path on windows
-    {
-        QString dotnetRoot = QString(getenv("DOTNET_ROOT"));
-        if(!dotnetRoot.isNull() && !dotnetRoot.isEmpty()) {
-            dotnetRoot.insert(0, dotnetRoot);
-        }
-    }
+//    QString fxrPath = "/usr/local/share/dotnet/host/fxr/2.1.3/libhostfxr.dylib";
+//    void* dll = dlopen(fxrPath.toLocal8Bit().constData(), RTLD_NOW | RTLD_LOCAL);
+//    hostfxr_get_native_search_directories_ptr getSearchDirs = reinterpret_cast<hostfxr_get_native_search_directories_ptr>(dlsym(dll, "hostfxr_get_clr_properties"));
 
+//    std::vector<const char*> argv;
+//    argv.push_back("/usr/local/share/dotnet/dotnet");
+//    argv.push_back("exec");
+//    argv.push_back("/Users/pknopf/temp/TestWeb/bin/Debug/netcoreapp2.1/TestWeb.dll");
+//    int argc = argv.size();
+//    int requiredBufferSize = 0;
+//    char buffer[2343434];
+//    int result = getSearchDirs(argc, &argv[0], &buffer[0], 2343434, &requiredBufferSize);
 
+//    QString t(&buffer[0]);
+//    std::cout << &buffer[0] << std::endl;
+//    qCritical("Got: %s", &buffer[0]);
 
-    void* dll = dlopen(clrPath.toLocal8Bit().constData(), RTLD_NOW | RTLD_LOCAL);
-    if(dll == nullptr) {
-        qCritical("Couldn't load lib at %s", qPrintable(clrPath));
-        return LoadClrResult::Failed;
-    }
+        #ifdef TEST
 
-    init = reinterpret_cast<coreclr_initialize_ptr>(dlsym(dll, "coreclr_initialize"));
-    shutdown = reinterpret_cast<coreclr_shutdown_ptr>(dlsym(dll, "coreclr_shutdown"));
-    shutdown2 = reinterpret_cast<coreclr_shutdown_2_ptr>(dlsym(dll, "coreclr_shutdown_2"));
-    createDelegate = reinterpret_cast<coreclr_create_delegate_ptr>(dlsym(dll, "coreclr_create_delegate"));
-    executeAssembly = reinterpret_cast<coreclr_execute_assembly_ptr>(dlsym(dll, "coreclr_execute_assembly"));
+    qputenv("DOTNET_ROOT", "/usr/local/share/dotnet");
 
-    if(init == nullptr) {
-        qCritical("Couldn't load 'coreclr_initialize' from %s", qPrintable(clrPath));
-        return LoadClrResult::Failed;
-    }
+    QString fxrPath = "/usr/local/share/dotnet/host/fxr/2.1.3/libhostfxr.dylib";
+    void* dll = dlopen(fxrPath.toLocal8Bit().constData(), RTLD_NOW | RTLD_LOCAL);
+    hostfxr_main_ptr main = reinterpret_cast<hostfxr_main_ptr>(dlsym(dll, "hostfxr_main"));
 
-    if(shutdown == nullptr) {
-        qCritical("Couldn't load 'coreclr_shutdown' from %s", qPrintable(clrPath));
-        return LoadClrResult::Failed;
-    }
+    std::vector<const char*> argv;
+    argv.push_back("/usr/local/share/dotnet/dotnet");
+    //argv.push_back("--depsfile");
+    //argv.push_back("/Users/pknopf/git/net-core-qml/src/net/Qml.Net.Sandbox/bin/Debug/netcoreapp2.1/Qml.Net.Sandbox.deps.json");
+    //argv.push_back("--runtimeconfig");
+    //argv.push_back("/Users/pknopf/git/net-core-qml/src/net/Qml.Net.Sandbox/bin/Debug/netcoreapp2.1/Qml.Net.Sandbox.runtimeconfig.json");
+    //--depsfile <path>                   Path to <application>.deps.json file
+    //  --runtimeconfig <path>
+    argv.push_back("exec");
+    //argv.push_back("--depsfile");
+    //argv.push_back("/Users/pknopf/git/net-core-qml/src/net/Qml.Net.Sandbox/bin/Debug/netcoreapp2.1/Qml.Net.Sandbox.deps.json");
+    //argv.push_back("--runtimeconfig");
+    //argv.push_back("/Users/pknopf/git/net-core-qml/src/net/Qml.Net.Sandbox/bin/Debug/netcoreapp2.1/Qml.Net.Sandbox.runtimeconfig.json");
+    argv.push_back("/Users/pknopf/git/net-core-qml/src/net/Qml.Net.Sandbox/bin/Debug/netcoreapp2.1/Qml.Net.Sandbox.dll");
+    int argc = argv.size();
+    int result = main(argc, &argv[0]);
 
-    if(shutdown2 == nullptr) {
-        qCritical("Couldn't load 'coreclr_shutdown_2' from %s", qPrintable(clrPath));
-        return LoadClrResult::Failed;
-    }
-
-    if(createDelegate == nullptr) {
-        qCritical("Couldn't load 'coreclr_create_delegate' from %s", qPrintable(clrPath));
-        return LoadClrResult::Failed;
-    }
-
-    if(executeAssembly == nullptr) {
-        qCritical("Couldn't load 'coreclr_execute_assembly' from %s", qPrintable(clrPath));
-        return LoadClrResult::Failed;
-    }
-
-    loadResult = LoadClrResult::Loaded;
-    return loadResult;
-}
-
-QString CoreHost::findClrPath()
-{
-    return "/usr/local/share/dotnet/shared/Microsoft.NETCore.App/2.1.1/libcoreclr.dylib";
-}
-
-QString CoreHost::findDotNetRoot()
-{
-    return "/usr/local/share/dotnet";
-}
-
-QSharedPointer<CoreHost> CoreHost::buildHost(QString managedEntryAssembly)
-{
-    QFileInfo file(managedEntryAssembly);
-    if(!file.exists()) {
-        qCritical("The file %s doesn't exist.", qPrintable(managedEntryAssembly));
-        return nullptr;
-    }
-
-    QString depsFile;
-    depsFile.append(file.path());
-    depsFile.append(QDir::separator());
-    depsFile.append(file.baseName());
-    depsFile.append(".deps.json");
-
-    QString runtimeFile;
-    runtimeFile.append(file.path());
-    runtimeFile.append(QDir::separator());
-    runtimeFile.append(file.baseName());
-    runtimeFile.append(".runtimeconfig.json");
-
-    QString runtimeDevFile;
-    runtimeDevFile.append(file.path());
-    runtimeDevFile.append(QDir::separator());
-    runtimeDevFile.append(file.baseName());
-    runtimeDevFile.append(".runtimeconfig.dev.json");
-
-    QFileInfo depsFileInfo(depsFile);
-    QFileInfo runtimeFileInfo(runtimeFile);
-    QFileInfo runtimeDevFileInfo(runtimeFile);
-
-    if(!depsFileInfo.exists()) {
-        qCritical("The file %s doesn't exist.", qPrintable(depsFile));
-    }
-
-    if(!runtimeFileInfo.exists()) {
-        qCritical("The file %s doesn't exist.", qPrintable(runtimeFile));
-    }
-
-    QSharedPointer<RuntimeConfig> runtimeConfig = RuntimeConfig::fromFile(runtimeFileInfo.path());
-
-    if(runtimeConfig.isNull()) {
-        qCritical("failed to load runtime config at %s", qPrintable(runtimeFileInfo.path()));
-        return nullptr;
-    }
-
-    QSharedPointer<RuntimeConfig> runtimeDevConfig;
-    if(runtimeDevFileInfo.exists()) {
-        runtimeDevConfig = RuntimeConfig::fromFile(runtimeDevFileInfo.path());
-        if(runtimeDevConfig == nullptr) {
-            qCritical("failed to load runtime config at %s", qPrintable(runtimeDevFileInfo.path()));
-            return nullptr;
-        }
-        runtimeConfig = runtimeConfig->merge(runtimeDevConfig);
-    }
-
-    return QSharedPointer<CoreHost>(new CoreHost(runtimeConfig));
+#endif
 }
