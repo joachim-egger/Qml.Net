@@ -30,8 +30,6 @@ namespace Qml.Net.Sandbox
 
         static int Main(string[] args)
         {
-            Console.WriteLine("Hello");
-            return 0;
             using (var app = new QGuiApplication(args))
             {
                 using (var engine = new QQmlApplicationEngine())

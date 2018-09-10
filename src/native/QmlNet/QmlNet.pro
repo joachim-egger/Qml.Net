@@ -16,7 +16,6 @@ DEFINES += QMLNET_LIBRARY
 DEFINES += QT_DEPRECATED_WARNINGS
 
 include(QmlNet.pri)
-include(Hosting.pri)
 
 target.path = $$(PREFIX)/
 INSTALLS += target

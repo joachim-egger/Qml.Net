@@ -13,6 +13,11 @@ CoreHost::CoreHost(QList<QByteArray> args) :
 
 }
 
+CoreHost::~CoreHost()
+{
+
+}
+
 CoreHost::LoadHostFxrResult CoreHost::loadHostFxr()
 {
     if(loadResult == CoreHost::LoadHostFxrResult::Loaded) {
@@ -43,17 +48,33 @@ bool CoreHost::isHostFxrLoaded()
     return loadResult == LoadHostFxrResult::Loaded;
 }
 
-void CoreHost::run()
+int CoreHost::run(QGuiApplication& app, QQmlApplicationEngine& engine, QString dotnetAssembly)
 {
+    loadHostFxr();
+
+    QList<QByteArray> args;
+    args.push_back("/usr/local/share/dotnet/dotnet");
+    args.push_back("exec");
+    args.push_back(dotnetAssembly.toLocal8Bit());
+
+    long t = (long)&app;
+    qDebug("test: %lu", t);
+
+    QString appPtr;
+    appPtr.sprintf("%lu", (quintptr)&app);
+    QString enginePtr;
+    enginePtr.sprintf("%lu", (quintptr)&engine);
+    args.push_back(appPtr.toLocal8Bit());
+    args.push_back(enginePtr.toLocal8Bit());
+
     std::vector<const char*> hostFxrArgs;
     QList<QByteArray>::iterator i;
     for (i = args.begin(); i != args.end(); ++i) {
         hostFxrArgs.push_back(const_cast<char*>(i->constData()));
     }
     int size = static_cast<int>(hostFxrArgs.size());
-    qDebug("test %s", hostFxrArgs[0]);
-    qDebug("test %s", hostFxrArgs[0]);
-    hostfxr_main(size, &hostFxrArgs[0]);
+
+    return hostfxr_main(size, &hostFxrArgs[0]);
 }
 
 QString CoreHost::findClrPath()
@@ -69,10 +90,4 @@ QString CoreHost::findHostFxrPath()
 QString CoreHost::findDotNetRoot()
 {
     return "/usr/local/share/dotnet";
-}
-
-QSharedPointer<CoreHost> CoreHost::buildHost(QList<QByteArray> args)
-{
-    args.push_front("/usr/local/share/dotnet/dotnet");
-    return QSharedPointer<CoreHost>(new CoreHost(args));
 }

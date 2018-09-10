@@ -2,11 +2,13 @@
 #define COREHOST_H
 
 #include <QSharedPointer>
-#include <QMutex>
 #include <Hosting/coreclrhost.h>
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
 
-class CoreHost
+class CoreHost : public QObject
 {
+    Q_OBJECT
 public:
     enum LoadHostFxrResult
     {
@@ -16,12 +18,12 @@ public:
     };
 
     CoreHost(QList<QByteArray> args);
-    CoreHost();
+    ~CoreHost();
 
     static LoadHostFxrResult loadHostFxr();
     static bool isHostFxrLoaded();
 
-    void run();
+    static int run(QGuiApplication& app, QQmlApplicationEngine& engine, QString dotnetAssembly);
 
     static QString findClrPath();
     static QString findHostFxrPath();
@@ -32,6 +34,7 @@ private:
     static hostfxr_main_ptr hostfxr_main;
     static LoadHostFxrResult loadResult;
     QList<QByteArray> args;
+signals:
 };
 
 #endif

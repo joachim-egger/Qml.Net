@@ -12,19 +12,34 @@ static int netValueTypeNumber = 0;
 
 extern "C" {
 
-Q_DECL_EXPORT QQmlApplicationEngineContainer* qqmlapplicationengine_create() {
-    QSharedPointer<QQmlApplicationEngine> qmlEngine = QSharedPointer<QQmlApplicationEngine>(new QQmlApplicationEngine());
+Q_DECL_EXPORT QQmlApplicationEngineContainer* qqmlapplicationengine_create(QQmlApplicationEngine* existingEngine) {
+    bool ownsEngine = true;
+    QQmlApplicationEngine* engine = nullptr;
 
-    QV4::ExecutionEngine* v4Engine = QQmlEnginePrivate::getV4Engine(qmlEngine.data());
+    if (existingEngine != nullptr) {
+        engine = existingEngine;
+        ownsEngine = false;
+    } else {
+        engine = new QQmlApplicationEngine();
+        ownsEngine = true;
+    }
+
+    QV4::ExecutionEngine* v4Engine = QQmlEnginePrivate::getV4Engine(engine);
 
     QV4::Scope scope(v4Engine);
     QV4::ScopedObject net(scope, v4Engine->memoryManager->allocObject<QV4::NetObject>());
     v4Engine->globalObject->defineDefaultProperty("Net", net);;
 
-    return new QQmlApplicationEngineContainer{qmlEngine};
+    return new QQmlApplicationEngineContainer{
+        engine,
+        ownsEngine
+    };
 }
 
 Q_DECL_EXPORT void qqmlapplicationengine_destroy(QQmlApplicationEngineContainer* container) {
+    if(container->ownsEngine) {
+        delete container->qmlEngine;
+    }
     delete container;
 }
 

@@ -10,7 +10,13 @@ namespace Qml.Net
     public sealed class QQmlApplicationEngine : BaseDisposable
     {
         public QQmlApplicationEngine()
-            :base(Interop.QQmlApplicationEngine.Create())
+            :base(Interop.QQmlApplicationEngine.Create(IntPtr.Zero))
+        {
+            
+        }
+
+        public QQmlApplicationEngine(IntPtr existingEngine)
+            :base(Interop.QQmlApplicationEngine.Create(existingEngine))
         {
             
         }
@@ -63,7 +69,7 @@ namespace Qml.Net
     internal interface IQQmlApplicationEngine
     {
         [NativeSymbol(Entrypoint = "qqmlapplicationengine_create")]
-        IntPtr Create();
+        IntPtr Create(IntPtr existingEngine);
         [NativeSymbol(Entrypoint = "qqmlapplicationengine_destroy")]
         void Destroy(IntPtr engine);
 
