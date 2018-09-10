@@ -24,20 +24,28 @@ struct NetArray : Object
 
     static ReturnedValue create(ExecutionEngine *engine, NetValue* netValue);
 
-    #if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
-    static void method_length(const BuiltinFunction *, Scope &, CallData *callData);
-    static void method_push(const BuiltinFunction *, Scope &, CallData *callData);
-    static void method_pop(const BuiltinFunction *, Scope &, CallData *callData);
-    static void method_forEach(const BuiltinFunction *, Scope &, CallData *callData);
-    #else
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
     static ReturnedValue method_length(const FunctionObject *b, const Value *thisObject, const Value *argv, int argc);
     static ReturnedValue method_push(const FunctionObject *b, const Value *thisObject, const Value *argv, int argc);
     static ReturnedValue method_pop(const FunctionObject *b, const Value *thisObject, const Value *argv, int argc);
     static ReturnedValue method_forEach(const FunctionObject *b, const Value *thisObject, const Value *argv, int argc);
+    static bool putIndexed(Managed *m, uint index, const Value &value);
+    #elif QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+    static void method_length(const BuiltinFunction *, Scope &, CallData *callData);
+    static void method_push(const BuiltinFunction *, Scope &, CallData *callData);
+    static void method_pop(const BuiltinFunction *, Scope &, CallData *callData);
+    static void method_forEach(const BuiltinFunction *, Scope &, CallData *callData);
+    static bool putIndexed(Managed *m, uint index, const Value &value);
+    #else
+    static void method_length(const BuiltinFunction *, Scope &, CallData *callData);
+    static void method_push(const BuiltinFunction *, Scope &, CallData *callData);
+    static void method_pop(const BuiltinFunction *, Scope &, CallData *callData);
+    static void method_forEach(const BuiltinFunction *, Scope &, CallData *callData);
+    static void putIndexed(Managed *m, uint index, const Value &value);
     #endif
 
     static ReturnedValue getIndexed(const Managed *m, uint index, bool *hasProperty);
-    static bool putIndexed(Managed *m, uint index, const Value &value);
+
 };
 
 }

@@ -33,10 +33,11 @@ SOURCES += \
     $$PWD/QCommon.cpp \
     $$PWD/NetListModel.cpp
 
+message($$QT_VERSION)
 versionAtLeast(QT_VERSION, 5.11.0) {
-    message('511')
     SOURCES += $$PWD/JsNetArray511.cpp
-} else {
-    message('510')
+} else:versionAtLeast(QT_VERSION, 5.10.0) {
     SOURCES += $$PWD/JsNetArray510.cpp
+} else {
+    SOURCES += $$PWD/JsNetArray59.cpp
 }
