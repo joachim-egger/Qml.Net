@@ -4,27 +4,27 @@
 #include <Hosting/coreruncommon.h>
 
 int main(int argc, char *argv[])
-{   
-    //CoreHost::test();
-
-    std::vector<const char*> arg2v;
-    arg2v.push_back("/usr/local/share/dotnet/dotnet");
-    arg2v.push_back("exec");
-    arg2v.push_back("/Users/pknopf/temp/TestWeb/bin/Debug/netcoreapp2.1/TestWeb.dll");
-    int arg2c = arg2v.size();
-
-    CoreHost::test2(arg2c, &arg2v[0]);
-
-    //host_startup_info_t startup_info;
-    //startup_info.parse(arg2c, &arg2v[0]);
-
+{
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
+
+    CoreHost::loadHostFxr();
+
+    QList<QByteArray> hostArgs;
+    hostArgs.append("exec");
+    hostArgs.append("/Users/pknopf/git/net-core-qml/src/net/Qml.Net.Hosting/bin/Debug/netcoreapp2.1/Qml.Net.Hosting.dll");
+    QSharedPointer<CoreHost> host = CoreHost::buildHost(hostArgs);
+
+    host->run();
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
 
-    return app.exec();
+    int result = app.exec();
+
+    host.clear();
+
+    return result;
 }

@@ -3,84 +3,76 @@
 #include <QFileInfo>
 #include <QDir>
 #include <dlfcn.h>
-#include <QThread>
-#include <QDebug>
-#include <iostream>
-#include "deps_resolver.h"
-#include "args.h"
-#include "libhost.h"
-#include "fx_muxer.h"
 
-CoreHost::CoreHost()
+hostfxr_main_ptr CoreHost::hostfxr_main = nullptr;
+CoreHost::LoadHostFxrResult CoreHost::loadResult = CoreHost::Failed;
+
+CoreHost::CoreHost(QList<QByteArray> args) :
+    args(args)
 {
 
 }
 
-void CoreHost::test()
+CoreHost::LoadHostFxrResult CoreHost::loadHostFxr()
 {
-    std::vector<const char*> arg2v;
-    arg2v.push_back("/usr/local/share/dotnet/dotnet");
-    arg2v.push_back("exec");
-    arg2v.push_back("/Users/pknopf/temp/TestWeb/bin/Debug/netcoreapp2.1/TestWeb.dll");
-    int arg2c = arg2v.size();
+    if(loadResult == CoreHost::LoadHostFxrResult::Loaded) {
+        return LoadHostFxrResult::AlreadyLoaded;
+    }
 
-    //host_startup_info_t startup_info;
-    //startup_info.parse(arg2c, &arg2v[0]);
+    QString hostFxrPath = findHostFxrPath();
 
-    //host_mode_t mode = detect_operating_mode(&startup_info);
+    void* dll = dlopen(qPrintable(hostFxrPath), RTLD_NOW | RTLD_LOCAL);
+    if(dll == nullptr) {
+        qCritical("Couldn't load lib at %s", qPrintable(hostFxrPath));
+        return LoadHostFxrResult::Failed;
+    }
 
+    hostfxr_main = reinterpret_cast<hostfxr_main_ptr>(dlsym(dll, "hostfxr_main"));
 
-    int new_argoff;
-        pal::string_t app_candidate;
-        opt_map_t opts;
-        int result;
-    hostpolicy_init_t g_init;
-    g_init.host_info.parse(arg2c, &arg2v[0]);
-    //g_init.host_mode = apphost;
-    arguments_t args;
-    parse_arguments(g_init, arg2c - 1, &arg2v[1], &args);
-    //parse_arguments()
+    if(hostfxr_main == nullptr) {
+        qCritical("Couldn't load 'hostfxr_main' from %s", qPrintable(hostFxrPath));
+        return LoadHostFxrResult::Failed;
+    }
 
-
-    qputenv("DOTNET_ROOT", "/usr/local/share/dotnet");
-
-
-
-        #if 1
-
-    qputenv("DOTNET_ROOT", "/usr/local/share/dotnet");
-
-    QString fxrPath = "/usr/local/share/dotnet/host/fxr/2.1.3/libhostfxr.dylib";
-    void* dll = dlopen(fxrPath.toLocal8Bit().constData(), RTLD_NOW | RTLD_LOCAL);
-    hostfxr_main_ptr main = reinterpret_cast<hostfxr_main_ptr>(dlsym(dll, "hostfxr_main"));
-
-    std::vector<const char*> argv;
-    argv.push_back("/usr/local/share/dotnet/dotnet");
-    //argv.push_back("--depsfile");
-    //argv.push_back("/Users/pknopf/git/net-core-qml/src/net/Qml.Net.Sandbox/bin/Debug/netcoreapp2.1/Qml.Net.Sandbox.deps.json");
-    //argv.push_back("--runtimeconfig");
-    //argv.push_back("/Users/pknopf/git/net-core-qml/src/net/Qml.Net.Sandbox/bin/Debug/netcoreapp2.1/Qml.Net.Sandbox.runtimeconfig.json");
-    //--depsfile <path>                   Path to <application>.deps.json file
-    //  --runtimeconfig <path>
-    argv.push_back("exec");
-    //argv.push_back("--depsfile");
-    //argv.push_back("/Users/pknopf/git/net-core-qml/src/net/Qml.Net.Sandbox/bin/Debug/netcoreapp2.1/Qml.Net.Sandbox.deps.json");
-    //argv.push_back("--runtimeconfig");
-    //argv.push_back("/Users/pknopf/git/net-core-qml/src/net/Qml.Net.Sandbox/bin/Debug/netcoreapp2.1/Qml.Net.Sandbox.runtimeconfig.json");
-    argv.push_back("/Users/pknopf/git/net-core-qml/src/net/Qml.Net.Sandbox/bin/Debug/netcoreapp2.1/Qml.Net.Sandbox.dll");
-    int argc = argv.size();
-    //int result = main(argc, &argv[0]);
-
-#endif
+    loadResult = LoadHostFxrResult::Loaded;
+    return loadResult;
 }
 
-void CoreHost::test2(int argc, const char* argv[])
+bool CoreHost::isHostFxrLoaded()
 {
-    trace::setup();
+    return loadResult == LoadHostFxrResult::Loaded;
+}
 
-    host_startup_info_t startup_info;
-    startup_info.parse(argc, argv);
+void CoreHost::run()
+{
+    std::vector<const char*> hostFxrArgs;
+    QList<QByteArray>::iterator i;
+    for (i = args.begin(); i != args.end(); ++i) {
+        hostFxrArgs.push_back(const_cast<char*>(i->constData()));
+    }
+    int size = static_cast<int>(hostFxrArgs.size());
+    qDebug("test %s", hostFxrArgs[0]);
+    qDebug("test %s", hostFxrArgs[0]);
+    hostfxr_main(size, &hostFxrArgs[0]);
+}
 
-    fx_muxer_t muxer;
-    muxer.execute(pal::string_t(), argc, argv, startup_info, nullptr, 0, nullptr);
+QString CoreHost::findClrPath()
+{
+    return "/usr/local/share/dotnet/shared/Microsoft.NETCore.App/2.1.1/libcoreclr.dylib";
+}
+
+QString CoreHost::findHostFxrPath()
+{
+    return "/usr/local/share/dotnet/host/fxr/2.1.3/libhostfxr.dylib";
+}
+
+QString CoreHost::findDotNetRoot()
+{
+    return "/usr/local/share/dotnet";
+}
+
+QSharedPointer<CoreHost> CoreHost::buildHost(QList<QByteArray> args)
+{
+    args.push_front("/usr/local/share/dotnet/dotnet");
+    return QSharedPointer<CoreHost>(new CoreHost(args));
 }

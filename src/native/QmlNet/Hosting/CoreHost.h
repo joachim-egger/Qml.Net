@@ -8,16 +8,30 @@
 class CoreHost
 {
 public:
-    enum LoadClrResult
+    enum LoadHostFxrResult
     {
         Loaded,
         AlreadyLoaded,
         Failed
     };
+
+    CoreHost(QList<QByteArray> args);
     CoreHost();
-    static void test();
-    static void test2(int argc, const char* argv[]);
+
+    static LoadHostFxrResult loadHostFxr();
+    static bool isHostFxrLoaded();
+
+    void run();
+
+    static QString findClrPath();
+    static QString findHostFxrPath();
+    static QString findDotNetRoot();
+    static QSharedPointer<CoreHost> buildHost(QList<QByteArray> args);
 private:
+    // Function pointers to the exported C functions.
+    static hostfxr_main_ptr hostfxr_main;
+    static LoadHostFxrResult loadResult;
+    QList<QByteArray> args;
 };
 
-#endif // COREHOST_H
+#endif
