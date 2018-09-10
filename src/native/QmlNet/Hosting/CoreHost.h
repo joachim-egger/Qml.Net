@@ -16,6 +16,7 @@ public:
     };
     CoreHost();
     static void test();
+    static void test2(int argc, const char* argv[]);
 private:
 };
 

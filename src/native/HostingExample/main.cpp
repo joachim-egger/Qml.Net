@@ -4,18 +4,19 @@
 #include <Hosting/coreruncommon.h>
 
 int main(int argc, char *argv[])
-{
-//    ExecuteManagedAssembly(
-//                argv[0],
-//                "/usr/local/share/dotnet/shared/Microsoft.NETCore.App/2.1.1/",
-//                "/Users/pknopf/temp/test-net/bin/Debug/netcoreapp2.1/test-net.dll",
-//                //"/Users/pknopf/git/Qml.Net.Examples/src/Features/bin/Debug/netcoreapp2.1/Features.dll",
-//                0,
-//                nullptr
-//            );
+{   
+    //CoreHost::test();
 
-    //QSharedPointer<CoreHost> host = CoreHost::buildHost("/Users/pknopf/temp/test-net/bin/Debug/netcoreapp2.1/test-net.dll");
-    CoreHost::test();
+    std::vector<const char*> arg2v;
+    arg2v.push_back("/usr/local/share/dotnet/dotnet");
+    arg2v.push_back("exec");
+    arg2v.push_back("/Users/pknopf/temp/TestWeb/bin/Debug/netcoreapp2.1/TestWeb.dll");
+    int arg2c = arg2v.size();
+
+    CoreHost::test2(arg2c, &arg2v[0]);
+
+    //host_startup_info_t startup_info;
+    //startup_info.parse(arg2c, &arg2v[0]);
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
